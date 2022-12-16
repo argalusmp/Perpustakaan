@@ -32,7 +32,7 @@ Public Class DataPerpus
         Dim result As New DataTable
 
         dbConn.ConnectionString = "server =" + server + ";" + "user id=" + username + ";" _
-            + "password=" + password + ";" + "database =" + database
+            + "password=" + password + ";" + "database =" + database + ";"
         dbConn.Open()
         sqlCommand.Connection = dbConn
         sqlCommand.CommandText = "SELECT id_koleksi AS 'ID',
@@ -40,10 +40,11 @@ Public Class DataPerpus
                                   jenis_koleksi AS 'Jenis Koleksi',
                                   penerbit AS 'Penerbit',
                                   tahun_terbit AS 'Tahun Terbit',
-                                  tanggal_masuk_koleksi AS 'Tanggal Masuk',
+                                  DATE_FORMAT(tanggal_masuk_koleksi,'%Y/%m/%d') AS 'Tanggal Masuk',
                                   lokasi AS 'Lokasi Rak',
                                   stock AS 'Stock',
-                                  bahasa AS 'Bahasa'
+                                  bahasa AS 'Bahasa',
+                                  kategori AS 'Kategori'
                                   FROM koleksi"
 
         sqlRead = sqlCommand.ExecuteReader
@@ -79,8 +80,8 @@ Public Class DataPerpus
                     & dir_gambar & "', '" _
                     & deskripsi_koleksi & "', '" _
                     & penerbit_koleksi & "', '" _
-                    & jenis_koleksi & "', '" _
-                    & tahun_terbit & "', '" _
+                    & jenis_koleksi & "', " _
+                    & tahun_terbit & " , '" _
                     & lokasi_rak & "', '" _
                     & tanggal_masuk.ToString("yyyy/MM/dd") & "', '" _
                     & stock_koleksi & "', '" _
@@ -109,7 +110,7 @@ Public Class DataPerpus
         Dim result As New List(Of String)
 
         dbConn.ConnectionString = "server = " + server + ";" + "user id= " + username + ";" _
-        + "password = " + password + ";" + "database = " + database
+        + "password = " + password + ";" + "database = " + database + ";" + "convert zero datetime=True"
         dbConn.Open()
         sqlCommand.Connection = dbConn
         sqlCommand.CommandText = "SELECT id_koleksi,
@@ -120,7 +121,7 @@ Public Class DataPerpus
                                    jenis_koleksi,
                                    tahun_terbit,
                                    lokasi,  
-                                   tanggal_masuk_koleksi,
+                                   DATE_FORMAT(tanggal_masuk_koleksi,'%Y/%m/%d'),
                                    stock,
                                    bahasa,
                                    kategori
@@ -158,11 +159,12 @@ Public Class DataPerpus
                                                   deskripsi_koleksi As String,
                                                   tahun_terbit As String,
                                                   lokasi_rak As String,
-                                                  tanggal_masuk As String,
+                                                  tanggal_masuk As Date,
                                                   stock_koleksi As Integer,
                                                   bahasa_koleksi As String,
                                                   kategori_koleksi As String)
-        tahun_terbit = tahun_terbit.ToString()
+
+
         dbConn.ConnectionString = "server = " + server + ";" + "user id= " + username + ";" _
         + "password = " + password + ";" + "database = " + database
 
@@ -170,16 +172,16 @@ Public Class DataPerpus
             dbConn.Open()
             sqlCommand.Connection = dbConn
             sqlQuery = "UPDATE KOLEKSI SET " &
-                    "nama_koleksi= '" & nama_koleksi & " ', '" &
-                    "dir_gambar= '" & dir_gambar & "', '" &
-                    "deskripsi= '" & deskripsi_koleksi & "', '" &
-                    "penerbit= '" & penerbit_koleksi & "', '" &
-                    "jenis_koleksi= '" & jenis_koleksi & "', '" &
-                    "tahun_terbit= '" & tahun_terbit & "', '" &
-                    "lokasi= '" & lokasi_rak & "', '" &
-                    "tanggal_masuk_koleksi= '" & tanggal_masuk & "', '" &
-                    "stock= '" & stock_koleksi & "', '" &
-                    "bahasa= '" & bahasa_koleksi & "', '" &
+                    "nama_koleksi= '" & nama_koleksi & " ', " &
+                    "dir_gambar= '" & dir_gambar & "', " &
+                    "deskripsi= '" & deskripsi_koleksi & "', " &
+                    "penerbit= '" & penerbit_koleksi & "'," &
+                    "jenis_koleksi= '" & jenis_koleksi & "'," &
+                    "tahun_terbit= '" & tahun_terbit & "'," &
+                    "lokasi= '" & lokasi_rak & "'," &
+                    "tanggal_masuk_koleksi= '" & tanggal_masuk.ToString("yyyy/MM/dd") & "'," &
+                    "stock= '" & stock_koleksi & "'," &
+                    "bahasa= '" & bahasa_koleksi & "', " &
                     "kategori= '" & kategori_koleksi & "' " &
                     "WHERE id_koleksi='" & ID & "'"
 
@@ -313,11 +315,11 @@ Public Class DataPerpus
         End Set
     End Property
 
-    Public Property GSDateMasuk() As String
+    Public Property GSDateMasuk() As Date
         Get
             Return tanggal_masuk
         End Get
-        Set(value As String)
+        Set(value As Date)
             tanggal_masuk = value
         End Set
     End Property
